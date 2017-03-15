@@ -417,36 +417,6 @@ def get_coeffs(dd):
         coeff_dict[r_f] = coeff_dict[r_f] * gcd * (1.0/n_a)
     return coeff_dict, gcd
 
-
-def calc_v(starting, resulting):
-    """
-    Calculates the voltage.
-    :param starting: [formula, energy_per_f.u., coefficient] for reactants
-    :param resulting: [formula, energy_per_f.u., coefficient] for products
-    :return: Voltage for reaction. (float)
-    """
-    reactant_sum = 0
-    product_sum = 0
-    n_e = 0
-    for pt in resulting:
-        f_e_fu = pt[1]
-        c = pt[2]
-        product = c * f_e_fu
-        product_sum += product
-    for rt in starting:
-        f_e_fu = rt[1]
-        c = rt[2]
-        product = c * f_e_fu
-        reactant_sum += product
-        ion_name = str(rt[0])[0:2]
-        if ion_name in monovalents:
-            n_e = c
-        elif ion_name in multivalents:
-            n_e = 2 * c
-    voltage = -1 * (product_sum - reactant_sum)/n_e
-    return voltage
-
-
 if __name__ == "__main__":
     n_tm = 2
     n_anion = 2 * n_tm
