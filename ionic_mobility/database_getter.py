@@ -1,13 +1,15 @@
 import math
 import numpy as np
-from pymatgen import Structure
+from pymatgen import Structure, Site
 
 """
 This is a collection of methods to get quantities from documents stored in the 
 ionic mobility MongoDB.  For somewhat historical reasons, some quantities are 
 stored in the database and some are derived on the fly; this may change in the 
 future.  These methods could use some refactoring (many repetitive calls to e.g.
-get_diffuser_index), but they work for now.
+get_diffuser_index), but they work for now.  To-do:
+    - Add transition metal radius and charge fetching.
+    - Other properties...
 """
 
 # Global variables
@@ -44,10 +46,10 @@ def call_derivation(prop, doc):
     return func_dict[prop](doc)
 
 
-def get_diffuser_index(neb_images, ion):
+def get_diffuser_index(structures, ion):
     """get_diffuser_index
     From a list of NEB images (Structure objects), finds index of diffuser.
-    :param neb_images: A list of Pymatgen Structure object (NEB trajectory)
+    :param structures: A list of Pymatgen Structure object (NEB trajectory)
     :param ion: Diffusing ion identity (String)
     :return: Integer giving the index of the diffusing atom in species list.
     """
@@ -107,10 +109,10 @@ def vol_per_anion(doc):
     :param doc: MongoDB document
     :return: A volume in A^3/anion in unit cell.
     """
-    s = doc["NEB_images"][0]
+    s = Structure.from_dict(doc["neb_images"][0])
     num_anions = 0
     for ion in anions:
-        num_anions += len(structure.indices_from_symbol(ion))
+        num_anions += len(s.indices_from_symbol(ion))
     return s.lattice.volume/num_anions
 
 
@@ -120,7 +122,7 @@ def min_cation_activated(doc):
     :param doc: MongoDB document.
     :return: Minimum activated-state cation distance along path.
     """
-    structures = doc["neb_images"]
+    structures = [Structure.from_dict(s) for s in doc["neb_images"]]
     neb_energies = [float(e) for e in doc["NEB_analysis"]["path_energy"]]
     max_energy = max(neb_energies)
     activated_state_index = neb_energies.index(max_energy)
@@ -135,7 +137,7 @@ def min_anion_activated(doc):
     :param doc: MongoDB document.
     :return: Minimum activation state anion distance along the path.
     """
-    structures = doc["neb_images"]
+    structures = [Structure.from_dict(s) for s in doc["neb_images"]]
     neb_energies = [float(e) for e in doc["NEB_analysis"]["path_energy"]]
     max_energy = max(neb_energies)
     activated_state_index = neb_energies.index(max_energy)
@@ -151,8 +153,8 @@ def get_cat_dist_in_struct(s, d_i):
     :param d_i: Index of the diffusing ion.
     :return: Distance to the closest cation from the diffusing ion.
     """
-    cat_dists = [s.get_distance(d_i, i) for i, s in enumerate(s.sites) 
-                 if i != diffuser_index and s.specie not in anions]
+    cat_dists = [site.distance(s.sites[d_i]) for i, site in enumerate(s.sites)
+                   if i != d_i and str(site.specie) not in anions]
     return min(cat_dists)
 
 
@@ -163,8 +165,8 @@ def get_anion_dist_in_struct(s, d_i):
     :param d_i: Index of the diffusing ion.
     :return: Distance to the closest anion from the diffusing ion.
     """
-    anion_dists = [s.get_distance(d_i, i) for i, s in enumerate(s.sites)
-                  if i != diffuser_index and s.specie in anions]
+    anion_dists = [site.distance(s.sites[d_i]) for i, site in enumerate(s.sites)
+                   if i != d_i and str(site.specie) in anions]
     return min(anion_dists)
 
 
@@ -191,7 +193,7 @@ def site_energy_difference(doc):
     return get_intermediate_difference(es)
 
 
-def site_cn_difference(doc):
+def site_cn_diff(doc):
     """site_cn_difference
     Gets the change in coordination number from starting to intermediate state.
     :param doc: MongoDB document.
@@ -220,7 +222,7 @@ def min_cation_along_path(doc):
     :param doc: MongoDB document.
     :return: A list of distances to closest cation along the NEB trajectory.
     """
-    structures = doc["neb_images"]
+    structures = [Structure.from_dict(s) for s in doc["neb_images"]]
     neb_energies = [float(e) for e in doc["NEB_analysis"]["path_energy"]]
     max_energy = max(neb_energies)
     activated_state_index = neb_energies.index(max_energy)
@@ -237,7 +239,7 @@ def min_anion_along_path(doc):
     :param doc: MongoDB document.
     :return: A list of distances to closest anion along NEB trajectory.
     """
-    structures = doc["neb_images"]
+    structures = [Structure.from_dict(s) for s in doc["neb_images"]]
     neb_energies = [float(e) for e in doc["NEB_analysis"]["path_energy"]]
     max_energy = max(neb_energies)
     activated_state_index = neb_energies.index(max_energy)
@@ -255,7 +257,7 @@ def get_all_displacements(doc):
     :return: [summed_displacement_site_0, ..., summed_displacement_site_N]
     """
     displacement_list = []
-    structures = doc["neb_images"]
+    structures = [Structure.from_dict(s) for s in doc["neb_images"]]
     for i, s in enumerate(structures[0].sites):
         displacement_along_path = get_site_displacements(structures, i)
         displacement_list.append(displacement_along_path)
