@@ -100,6 +100,7 @@ def build_db_query(criterion=None, value=None, ucq=None, custom=False):
         return eval(ucq)
 
 if __name__ == "__main__":
+    # A simple set of commands to test the script.
     # Let's compare the minimum cation distance for the post-spinels.
     path_id_cm = "mvc-6921-NEB-001"
     path_id_cf = "mvc-12110-NEB-001"
