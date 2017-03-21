@@ -116,11 +116,6 @@ cv = cross_validation.ShuffleSplit(len(bandgaps), n_inter=10, test_size=0.1,
 scores = cross_validation.cross_val_score(linear, naiveFeatures, bandgaps,
                                           cv=cv, scoring='mean_absolute_error')
 
-print("Mean absolute error of linear ridge regression on band gap model:")
-print(str(round(abs(mean(scores)), 3)) + " eV")
-print("For comparison, mean absolute error of just guessing avg. band gap is:")
-print(str(round(baseline_e, 3)) + " eV")
-
 # Some more detailed info about the model:
 print("Coefficients for each element:")
 linear.fit(naive_features, bandgaps)
