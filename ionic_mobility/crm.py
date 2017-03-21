@@ -6,7 +6,7 @@ import scipy.cluster.vq as vq
 import numpy as np
 
 
-def regress_feature(regression_model=linear, cluster, metric, obs):
+def regress_feature(regression_model=linear_model.Ridge(alpha = 0.5), cluster, metric, obs):
     """regress_feature
     Perform regression of values of some metric against a observed data.
     :param regression_model: Regression model to use (default: linear)
@@ -20,7 +20,7 @@ def regress_feature(regression_model=linear, cluster, metric, obs):
     else:
         cv = cross_validation.ShuffleSplit(len(obs), n_iter=10, test_size=0.1,
                                                    random_state=0)
-        scores = cross_validation.cross_val_score(linear, metric, obs, 
+        scores = cross_validation.cross_val_score(regression_model, metric, obs, 
                                                   scoring='mean_absolute_error')
         return np.abs(np.mean(scores))
 
