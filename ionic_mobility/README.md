@@ -6,7 +6,7 @@ This collection of tools is designed to interact with a MongoDB containing the r
 
 * analyze_db.py: Methods to facilitate the generation of feature vectors from the ionic mobility database; also contains other methods useful for querying the DB.
 
-* crm.py: An attempt to apply clustering-ranking-modeling to ionic mobility data.  Currently a work in progress; still making some decisions about which data is best to cluster and whether KMeans++ is needed for initialization.
+* crm.py: An attempt to apply clustering-ranking-modeling to ionic mobility data.  Currently a work in progress; right now I dump the data and use regress_feature to get the cross_Validation scores for linear regression manually (because there are a small number of features), but the next step is writing a routine to regress all the features from the feature vector in a given cluster against the ionic migration barrier and select the best one.
 
 * database_scanner_clean.py: An older, messier version of database_getter. When I began to explore more data mining approaches I took a more modular approach and decided to rebuild this script in the form of database getter.  This script is being phased out of my workflow but still contains some unique functionality.
 
