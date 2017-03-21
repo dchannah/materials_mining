@@ -5,7 +5,7 @@ from analyze_db import initialize_db, build_db_query, build_feature_vector
 
 """
 Clustering-ranking-modeling to learn ionic mobility predictors.  We're using
-the X-means clustering algorithm here.
+the K-means clustering algorithm here.
 """
 
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     coll = initialize_db(yaml_file)
 
     # Let's just grab all of the documents in the ionic mobility DB for now.
-    docs = coll.find()
+    docs = coll.find({"cation_type": "Mg"})
 
     # Now we build our feature vector for all these docs.
     fv = build_feature_vector(feature_list, docs)
@@ -40,6 +40,9 @@ if __name__ == "__main__":
     # Now let's do some clustering.
     points = build_point_list(fv)
     points = vq.whiten(points)  # Need to normalize each column first.
-    centroids, distortion = vq.kmeans(points, 4)
-    indices, _ = vq.vq(points, centroids)
-
+    centroids, distortion = vq.kmeans(points, 2)
+    idx, _ = vq.vq(points, centroids)
+    plot(points[idx==0,0], points[idx==0,1], 'ob',
+         points[idx==1,0], points[idx==1,1], 'or')
+    plot(centroids[:,0], centroids[:,1], 'sg', markersize=8)
+    show()
