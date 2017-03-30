@@ -8,4 +8,5 @@ This an analysis demo for the ionic mobility database (these are slightly modifi
 
 * plot_neb.py: A dynamic, messy script that I use to plot results of individual ionic mobility calculations.  Uses matplotlib and LaTeX for labels.
 
-* neb_profile.dat: The output from NEB analysis; this is fed to plot_neb.py to plot (for example) distance vs. energy.  Example: ~~~~ python plot_neb.py neb_profile.dat ~~~~
+* neb_profile.dat: The output from NEB analysis; this is fed to plot_neb.py to plot (for example) distance vs. energy.  Example:  
+```python plot_neb.py neb_profile.dat ```
