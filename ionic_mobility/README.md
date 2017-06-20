@@ -15,3 +15,11 @@ This collection of tools is designed to interact with a MongoDB containing the r
 * neb_push_v3.py: Uses the UpdaterNEB class (see diffusion_updater_v3.py) to process and merge NEB trajectories into the ionic mobility MongoDB.
 
 * pca_test.py: Another work in progress - attempting to apply principal component analysis to feature vectors generated from NEB trajectories.   
+
+* madelung.py: Calculates site energy differences in structures based on a combination of simple electrostatics and a cluster-based training set.
+
+* coord_tools.py: Contains structural energy contributions based on fifth-order polynomial regression against cluster energies in simple compounds, also has a bond-length calculator for ease-of-use.
+
+* group_structures_in_db.py: Uses the Pymatgen structure matcher to group the structures in a MongoDB into structurally-related bins.
+
+* check_duplicates_m1.py: Used to facilitate high-throughput screening; checks for structural matches across two MongoDB collections.
