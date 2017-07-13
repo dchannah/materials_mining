@@ -33,13 +33,13 @@ def populate_feature_vectors(f_v, c_dict):
 
     This method takes a dictionary of dictionaries relating dry compounds to
     their hydrated matches (if any). It creates a feature vector based on the
-    requested features (a list passed to to the method) and stores in the
+    requested features (a list passed to to the method) and stored in the
     "feature_vector" field of the dictionary.
 
     Args:
         f_v (list) = A list of descriptors to include in the feature vector.
         c_dict (dict) = A dictionary (with dry cmpd keys) of hydrate finds.
-    
+
     """
     for d_c in c_dict:
         c_dict[d_c]["feature_vector"] = populate_f_v(f_v, d_c, c_dict[d_c])
@@ -88,12 +88,12 @@ def main():
     ]
 
     # A list of JSON files from our hydrate finder.
-    json_files = ["ox_without_feature.json"]
+    json_files = ["sample_json_no_feature.json"]
 
     for j_f in json_files:
         json_data = read_json_file(j_f)
         populate_feature_vectors(descriptor_list, json_data)
-        with open('./oxide_with_feature_more.json', 'w') as f:
+        with open('./sample_json_with_feature.json', 'w') as f:
             json.dump(json_data, f)
 
 if __name__ == "__main__":

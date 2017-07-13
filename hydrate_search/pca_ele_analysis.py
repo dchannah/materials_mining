@@ -4,17 +4,17 @@
 
 This script analyzes chemical space for areas likely to host undiscovered
 phases which can incorporate crystalline water. It does so by utilizing
-principal component analysis.
+principal component analysis. Following PCA, an elemental analysis of compounds
+inside the hydrated cluster is compared to the distribution of elements in the
+whole set.
 
 """
 
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-import scipy.stats as stats
 import numpy as np
-from pymatgen import Composition, Element
-from hydrate_finder_clean import list_of_keys
+from pymatgen import Composition
 from matplotlib.path import Path
 from scipy.spatial import ConvexHull
 from sklearn.preprocessing import StandardScaler
@@ -29,11 +29,11 @@ def elemental_count(list_of_formulas):
     This takes a list of chemical formulas and tallies up the number of
     compounds containing each element. Note that it doesn't concern itself
     with how many atoms of that element are present - only whether the element
-    is present or not.
+    is present or not. Na is excluded because it's in every compound.
 
     Args:
         list_of_formulas (list): A list of valid chemical formulas.
-    
+
     Returns:
         A dictionary with elemental symbols as keys and frequencies as values.
     """
@@ -97,7 +97,7 @@ def build_pandas_df(coll_dict, fv_list):
     Args:
         coll_dict (dict): Dictionary in format output by the hydrate finder.
         fv_list (list): A list of descriptors to put into the PCA.
-    
+
     Returns:
         A dictionary formatted as {mpid: {feature1: value, feature2: value}}
     """
@@ -159,7 +159,7 @@ def main():
     point_ref_dict = {}
     for idx, data_label in enumerate(d_f.index):
         point_ref_dict[str(y_transformed[idx])] = data_label
-    
+
     # Plot the data in 2-dimensional principal component space.
     with plt.style.context('seaborn-darkgrid'):
         pca1 = 0
@@ -173,14 +173,14 @@ def main():
                 hull = ConvexHull(pts)
                 for simplex in hull.simplices:
                     plt.plot(pts[simplex, 0], pts[simplex, 1], 'k-', c=col)
-        
+
         # Now we get the unknown points within the convex hull.
-        all_unk_pts = np.column_stack((y_transformed[y_dat == 'Unknown', pca1], 
+        all_unk_pts = np.column_stack((y_transformed[y_dat == 'Unknown', pca1],
                                        y_transformed[y_dat == 'Unknown', pca2]))
 
-        unk_pts_in_hull = [u_pt for u_pt in all_unk_pts if 
+        unk_pts_in_hull = [u_pt for u_pt in all_unk_pts if
                            in_hull(u_pt, pts, hull)]
-        
+
         mpids_in_hull = [point_ref_dict[str(p_t)] for p_t in unk_pts_in_hull]
 
         all_formulas = [json_data[mpd]['formula'] for mpd in d_f.index]
@@ -202,11 +202,12 @@ def main():
         plt.show()
 
         # Now we look at the histogram
-        plt.gcf().clear()
+        plt.gcf().clear()  # Clear the old plot
         plt.bar(list(in_hull_ele_count.keys()), in_hull_ele_count.values(),
                 color='r', width=0.1, label='Inside hydrate cluster')
-        plt.bar(list(total_ele_count_shifted.keys()), total_ele_count_shifted.values(),
-                color='g', width=0.1, label='All compounds')
+        plt.bar(list(total_ele_count_shifted.keys()),
+                total_ele_count_shifted.values(), color='g', width=0.1,
+                label='All compounds')
         bar_plot_labels = [labels[value] for value in in_hull_ele_count.keys()]
         plt.xticks(list(in_hull_ele_count.keys()), bar_plot_labels)
         plt.ylabel("Fraction of material class (%)")

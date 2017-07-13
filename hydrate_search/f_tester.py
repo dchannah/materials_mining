@@ -67,7 +67,7 @@ def split_feature_lists(c_dict, feature):
 
 
 def f_value(group1, group2):
-    """Carries out an F-test using two lists.
+    """Carries out an F-test (or similar) using two lists.
 
     This method compares the variance within hydrates/dry compounds to the
     variance across those groups in order to assess a descriptor's utility.

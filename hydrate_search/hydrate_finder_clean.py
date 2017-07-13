@@ -4,12 +4,11 @@
 """
 A program to find compounds which have hydrated phases. Note that because phase
 transitions are well known to occur upon hydration, we consider a 'hydrated'
-match to be any compound having a composition which is the original formula 
+match to be any compound having a composition which is the original formula
 plus an integer number of(H2O) formula units.
 """
 
 import json
-from collections import Counter
 from pymatgen import MPRester, Composition
 from set_generator import generate_query
 
@@ -71,14 +70,15 @@ def check_actual_hydrate(struct):
     """
     for site in struct.sites:
         if str(site.specie) == "O":
-           neighbors = struct.get_neighbors(site, 1.5)
-           h_sites = [pst for pst in neighbors if str(pst[0].specie) == "H"]
-           if len(h_sites) >= 2:
-               return True
+            neighbors = struct.get_neighbors(site, 1.5)
+            h_sites = [pst for pst in neighbors if str(pst[0].specie) == "H"]
+            if len(h_sites) >= 2:
+                return True
     return False
 
 
 def main():
+    """Main function."""
     electrolyte_space = ["Si", "Ge", "P", "Sb", "Zr", "P", "As", "Sn"]
     working_ion = ["Na"]
     anion = ["O"]
@@ -88,7 +88,6 @@ def main():
     for cmpd1 in cmpd_list:
         comp1 = Composition(cmpd1['pretty_formula'])
         mpid1 = cmpd1['material_id']
-        elist1 = list_of_keys(comp1)
         if mpid1 not in hydrated_matches:
             hydrated_matches[mpid1] = {}
             hydrated_matches[mpid1]['wet_matches'] = []
@@ -97,7 +96,6 @@ def main():
         for cmpd2 in cmpd_list:
             comp2 = Composition(cmpd2['pretty_formula'])
             mpid2 = cmpd2['material_id']
-            elist2 = list_of_keys(comp2)
             if is_hydrate_multiple(comp1, comp2):
                 with MPRester() as mpr:
                     cmpd2_struct = mpr.get_structure_by_material_id(mpid2)

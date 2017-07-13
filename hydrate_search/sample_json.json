@@ -1,0 +1,22 @@
+{"mp-864891": {
+    "wet_matches": [{"formula": "NaP(HO2)2", "mpid": "mp-504944"}, 
+                    {"formula": "NaPH4O5", "mpid": "mp-554288"}, 
+                    {"formula": "NaP(HO)6", "mpid": "mp-696157"}, 
+                    {"formula": "NaP(HO2)2", "mpid": "mp-697367"}, 
+                    {"formula": "NaPH4O5", "mpid": "mp-720825"}], 
+    "feature_vector": {
+        "mean_atomic_radius": 0.9199999999999999, 
+        "sum_atomic_radius": 4.6, 
+        "mean_electronegativity": 2.688, 
+        "volume_per_atom": 13.060785753836619, 
+        "mean_ionic_radius": 1.098, 
+        "sum_ionic_radius": 5.49, 
+        "sum_row_number": 12.0, 
+        "mean_row_number": 2.4, 
+        "sum_group_number": 64.0, 
+        "mean_group_number": 12.8, 
+        "alkali_metal_ratio": 2.109090909090909, 
+        "alkali_anion_ratio": 0.9206349206349206, 
+        "metal_anion_ratio": 0.43650793650793657, 
+        "coordination_number": 13.5}, 
+    "formula": "NaPO3"}}
