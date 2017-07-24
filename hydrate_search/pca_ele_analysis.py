@@ -125,8 +125,8 @@ def main():
         "sum_ionic_radius",
         "sum_row_number",
         # "mean_row_number",
-        "sum_group_number"
-        # "mean_group_number"
+        "sum_group_number",
+        # "mean_group_number",
         # "alkali_metal_ratio",
         # "alkali_anion_ratio",
         # "metal_anion_ratio",

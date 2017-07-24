@@ -220,7 +220,7 @@ class FeatureFinder():
 
     def cation_coordination(self):
         """Gets the average coordination number of cations."""
-        b_l = 3.6  # Less than most next-nearest-neighbor distances.
+        b_l = 2.5  # Less than most next-nearest-neighbor distances.
         neighbor_list = []
         for site in self.struct.sites:
             if str(site.specie) in self.all_cations:

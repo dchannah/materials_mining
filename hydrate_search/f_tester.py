@@ -81,6 +81,7 @@ def f_value(group1, group2):
     """
     return stats.kruskal(group1, group2)
     # return stats.f_oneway(group1, group2)
+    # return stats.wilcoxon(group1, group2)
 
 
 def main():
@@ -104,7 +105,7 @@ def main():
         json_data = read_json_file(j_f)
         bar_plot_labels = []
         f_values = []
-        for descriptor in descriptor_list:
+        for i, descriptor in enumerate(descriptor_list):
             bar_plot_labels.append(descriptor)
             data_dict = split_feature_lists(json_data, descriptor)
             f_values.append(f_value(data_dict['dry'], data_dict['wet'])[0])
