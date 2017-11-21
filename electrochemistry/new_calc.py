@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pd_tools, sys, os, copy, sympy
-from v_calc import build_complete_pd, remove_working_ion
+from v_calc import build_complete_pd, remove_working_ion, get_voltage
 
 """
 I am currently re-writing the calculator to accont for the simpler set of
@@ -12,7 +12,7 @@ only 2 distinct voltages:
     match in this case - we have performed local calculations such that a match
     is always available.
 
-    2) V__{LCP} = This is the voltage resulting from intercalation of the
+    2) V_{LCP} = This is the voltage resulting from intercalation of the
     ion into the lowest energy charged polymorph. In this case, if no match is
     found OR if a match is found but exhibits an Ehull above 100 meV/atom, a
     hypothetical charged structure is derived with Ehull = 100 meV/atom to
@@ -29,7 +29,7 @@ MULTIVALENTS = ["Ca", "Mg", "Zn"]
 WORKING_IONS = MONOVALENTS + MULTIVALENTS
 TRANSITION_METALS = ["Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni"]
 ANIONS = ["O", "S", "Se"]
-CALCDIR = "./conv_inter_calcs"
+CALCDIR = "/home/dan/lbl_work/conv_inter_calcs"
 
 
 def find_topo_match(ent, ent_list, hypo=False):
@@ -50,7 +50,8 @@ def find_topo_match(ent, ent_list, hypo=False):
                 return ent_copy
 
 
-def generate_cmpds(wis, tms, anions, n_tms):
+def generate_cmpds(wis, tms, anions, n_tm):
+    cmpds = []
     for ion in wis:
         for tm in tms:
             for x in anions:
@@ -77,6 +78,12 @@ def get_entries(f_str, pda):
     return entries
 
 
+def gen_empty_disch_dict(dischs):
+    struct_dict = {}
+    for disch in dischs:
+        struct_dict[remove_working_ion(disch)] = disch
+    return struct_dict
+
 
 def main():
     """
@@ -86,11 +93,11 @@ def main():
     """
 
     # Read in number of transition metals per working ion from user.
-    n_tm = sys.argv[1]
+    n_tm = int(sys.argv[1])
 
     # Now get a list of directories containing supplemental local calcs.
     calc_directories = [name for name in os.listdir(CALCDIR) if
-                        os.path.isdir(os.path.join(folder, name))]
+                        os.path.isdir(os.path.join(CALCDIR, name))]
 
     # Generate a compound list, using a method for this.
     cmpd_list = generate_cmpds(WORKING_IONS, TRANSITION_METALS, ANIONS, n_tm)
@@ -100,7 +107,7 @@ def main():
         chg_cmpd = disch_cmpd[2:]  # Also need corresponding charged compound.
         
         # Get a phase diagram & analyzer including local calculations.
-        pd = build_complete_pd(cmpd, calc_directories)
+        pd = build_complete_pd(disch_cmpd, calc_directories)
         pda = PDAnalyzer(pd)
         
         disch_entries = get_entries(disch_cmpd)
@@ -119,16 +126,19 @@ def main():
         Next, we need to get the LCP voltage. This one is going to be
         trickier, because we need to find the discharged structure that matches
         the stable charged compound while empty.
-
-        This is actually a mess. A Monday project...
         """
+        dict_for_matching = gen_empty_disch_dict(disch_entries) 
         stable_ch = get_stable_entry(ch_entry)
         lcp_topo_empty_match = find_topo_match(stable_ch, [remove_working_ion(e)
                                                for e in disch_entries])
-    
+        lcp_topo_match = dict_for_matching[lcp_topo_empty_match]
+        lcp_voltages = get_voltage(stable_ch, lcp_topo_match, pda)
 
-        
+        print("LDP: ", ldp_voltages)
+        print("LCP: ", lcp_voltages)
+        break
 
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     main()
+
